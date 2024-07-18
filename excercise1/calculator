@@ -1,0 +1,83 @@
+import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.*;
+
+
+public class calculator extends JFrame {
+
+    private JTextField firstNumberField;
+    private JTextField secondNumberField;
+    private JTextField resultField;
+
+    public calculator() {
+        super("Calculator");
+        setLayout(new BorderLayout());
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2));
+        inputPanel.add(new JLabel("First Number:"));
+        firstNumberField = new JTextField();
+        inputPanel.add(firstNumberField);
+
+        inputPanel.add(new JLabel("Second Number:"));
+        secondNumberField = new JTextField();
+        inputPanel.add(secondNumberField);
+
+        inputPanel.add(new JLabel("Result:"));
+        resultField = new JTextField();
+        resultField.setEditable(false);
+        inputPanel.add(resultField);
+
+        add(inputPanel, BorderLayout.NORTH);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(3, 2));
+        String[] buttonLabels = {
+                "+", "-", "*", "/", "%", "Clear"
+        };
+        for (String label : buttonLabels) {
+            JButton button = new JButton(label);
+            button.addActionListener(new ButtonClickListener());
+            buttonPanel.add(button);
+        }
+        add(buttonPanel, BorderLayout.CENTER);
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+    }
+    private class ButtonClickListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand();
+            if (command.equals("Clear")) {
+                firstNumberField.setText("");
+                secondNumberField.setText("");
+                resultField.setText("");
+                return;
+            }
+            double n1 = Double.parseDouble(firstNumberField.getText());
+            double n2 = Double.parseDouble(secondNumberField.getText());
+            double result = 0;
+            switch (command) {
+                case "+":
+                    result = n1 + n2;
+                    break;
+                case "-":
+                    result = n1 - n2;
+                    break;
+                case "*":
+                    result = n1 * n2;
+                    break;
+                case "/":
+                    result = n1 / n2;
+                    break;
+                case "%":
+                    result = n1 % n2;
+                    break;
+            }
+            resultField.setText(Double.toString(result));
+        }
+    }
+
+    public static void main(String[] args) {
+        new calculator();
+    }
+}
+//sucessed
