@@ -1,0 +1,124 @@
+package org.example;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.*;
+
+public class Customer extends JFrame {
+
+    private JTextField idField, lastNameField, firstNameField, phoneField;
+    private JButton previousButton, nextButton;
+    private Connection connection;
+    private PreparedStatement preparedStatement;
+    private ResultSet resultSet;
+
+    public Customer() {
+        super("Customer");
+        idField = new JTextField(10);
+        idField.setEditable(false);
+        lastNameField = new JTextField(20);
+        firstNameField = new JTextField(20);
+        phoneField = new JTextField(15);
+        previousButton = new JButton("Previous");
+        nextButton = new JButton("Next");
+
+        previousButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showPreviousCustomer();
+            }
+        });
+
+        nextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showNextCustomer();
+            }
+        });
+
+        JPanel formPanel = new JPanel(new GridLayout(5, 2));
+        formPanel.add(new JLabel("ID:"));
+        formPanel.add(idField);
+        formPanel.add(new JLabel("Last Name:"));
+        formPanel.add(lastNameField);
+        formPanel.add(new JLabel("First Name:"));
+        formPanel.add(firstNameField);
+        formPanel.add(new JLabel("Phone:"));
+        formPanel.add(phoneField);
+        formPanel.add(previousButton);
+        formPanel.add(nextButton);
+
+        add(formPanel, BorderLayout.CENTER);
+
+        connectToDatabase();
+
+        showNextCustomer();
+
+        setSize(400, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void connectToDatabase() {
+        try {
+            String url = "jdbc:mysql://127.0.0.1:3306/?user=root";
+            String user = "root";
+            String password = "pwd123";
+            connection = DriverManager.getConnection(url, user, password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showPreviousCustomer() {
+        try {
+            if (resultSet.previous()) {
+                displayCustomer();
+            } else {
+                resultSet.last();
+                displayCustomer();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showNextCustomer() {
+        try {
+            if (resultSet.next()) {
+                displayCustomer();
+            } else {
+                resultSet.first();
+                displayCustomer();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void displayCustomer() {
+        try {
+            int id = resultSet.getInt("id");
+            String lastName = resultSet.getString("last_name");
+            String firstName = resultSet.getString("first_name");
+            String phone = resultSet.getString("phone");
+
+            idField.setText(Integer.toString(id));
+            lastNameField.setText(lastName);
+            firstNameField.setText(firstName);
+            phoneField.setText(phone);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new Customer();
+            }
+        });
+    }
+}
